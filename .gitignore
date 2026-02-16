@@ -3,9 +3,12 @@ __pycache__/
 *.pyc
 
 # Environment variables
-.env
+.env*
 .venv/
 
 # IDE
 .idea/
 
+postgres_data
+
+test.py
