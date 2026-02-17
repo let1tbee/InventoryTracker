@@ -13,11 +13,12 @@ class Item(BaseModel):
 def read_root():
     return {"Hello": "World"}
 
-@app.get("/items")
-def read_item():
-    return {"Items": items}
-
 @app.post("/items")
-def create_item(item: Item):
+def create_item(item: str):
     items.append(item)
     return {"Items": items}
+
+@app.get(f"/items/{id}")
+def read_item(id: int)-> dict:
+    return {"Items": items[id]}
+

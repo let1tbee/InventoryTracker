@@ -3,7 +3,7 @@ services:
     image: postgres:alpine
     restart: always
     ports:
-      - 5432:5432
+      - '5432:5432'
     env_file:
       - .env.db
     volumes:
@@ -15,10 +15,6 @@ services:
     env_file:
       - .env.db
     ports:
-      - "5050:80"
+      - '5050:80'
     depends_on:
       - database
-
-
-
-
