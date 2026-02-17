@@ -6,6 +6,7 @@
 * Installed Docker
 
 **Setup:**
+* pip install -r requirements.txt
 * run "docker compose up -d"
 * uvicorn main:app --reload
 
@@ -22,8 +23,6 @@
 * uvicorn main:app --reload
 
 **Endpoints:**
-* url: localhost:8000/
-* get: / - "Hello world" 
-* get: /items - Returns item by ID
-* post: /items - Adds item to a list
+* url: http://localhost:8000/
 * /docs - FastAPI documentation GUI
+* get: / - "Hello world"
