@@ -28,19 +28,22 @@
 * get: / - "Hello world"
 
 **Structure:**
+```text
 InventoryTracker/
-├──app/
-│  ├──api/\
-│     ├──employees.py
-│     └──equipment.py
-│  ├──env/
-│     ├──.env
-│     └──.env.db
-│  ├──repository/
-│     ├──employees.py
-│     └──equipment.py
-│  ├──models.py
-│  ├──main.py
-│  ├──docker-compose.yaml
-│  ├──README.md
-│  ├──requirements.txt
+├── app/                    # 
+│   ├── api/                # 
+│   │   ├── employees.py    # 
+│   │   └── equipment.py    # 
+│   ├── env/                # 
+│   │   ├── .env            # 
+│   │   └── .env.db         # 
+│   ├── repository/         # 
+│   │   ├── employees.py    # 
+│   │   └── equipment.py    # 
+│   ├── database.py         # 
+│   ├── models.py           # 
+├── main.py                 # 
+├── docker-compose.yaml     # 
+├── requirements.txt        # 
+└── README.md               # 
+```
