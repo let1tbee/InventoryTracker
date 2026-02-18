@@ -37,7 +37,7 @@ jobs:
     - name: Create dummy .env files
       run: |
           mkdir -p app/env
-          echo "DB_URL='postgresql+psycopg2://admin:admin@localhost:5432/inventoryDB'" > app/env/.env.db  
+          echo "DB_URL=postgresql+psycopg2://admin:admin@localhost:5432/inventoryDB" > app/env/.env.db  
     - name: Test with pytest
       run: |
         pytest 
