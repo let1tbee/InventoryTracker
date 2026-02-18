@@ -22,6 +22,10 @@
 **FastAPI commands:**
 * uvicorn main:app --reload
 
+**pytest commands**
+* detailed: pytest -v -s
+* debug: pytest -x -v -l
+
 **Endpoints:**
 * url: http://localhost:8000/
 * /docs - FastAPI documentation GUI

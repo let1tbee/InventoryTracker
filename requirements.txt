@@ -4,3 +4,5 @@ sqlalchemy
 pydantic
 pydantic_settings
 psycopg2
+pytest
+httpx

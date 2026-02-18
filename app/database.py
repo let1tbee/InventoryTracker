@@ -1,7 +1,7 @@
 from sqlmodel import create_engine,SQLModel, Session
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from .config import settings
+from app.config import settings
 
 
 engine = create_engine(settings.DB_URL, echo=True)
