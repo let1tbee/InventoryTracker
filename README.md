@@ -46,6 +46,9 @@ InventoryTracker/
 │   │   └── equipment.py    # 
 │   ├── database.py         # 
 │   ├── models.py           # 
+├── tests/                  # 
+│   ├── test_default.py     # 
+│   └──test_employees.py    # 
 ├── main.py                 # 
 ├── docker-compose.yaml     # 
 ├── requirements.txt        # 

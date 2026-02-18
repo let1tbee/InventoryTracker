@@ -2,7 +2,7 @@ import pytest
 from sqlmodel import create_engine, SQLModel, Session, StaticPool
 from fastapi.testclient import TestClient
 from main import app
-from app import database
+from app.database import get_session
 
 test_employees = [{
         "first_name": "test_first_name",
@@ -30,7 +30,7 @@ def override_get_session():
         yield session
 
 client = TestClient(app)
-app.dependency_overrides[database.get_session] = override_get_session
+app.dependency_overrides[get_session] = override_get_session
 
 @pytest.mark.parametrize("employee", test_employees)
 def test_create_employee(employee):
