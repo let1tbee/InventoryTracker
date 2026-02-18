@@ -26,3 +26,21 @@
 * url: http://localhost:8000/
 * /docs - FastAPI documentation GUI
 * get: / - "Hello world"
+
+**Structure:**
+InventoryTracker/
+├──app/
+│  ├──api/\
+│     ├──employees.py
+│     └──equipment.py
+│  ├──env/
+│     ├──.env
+│     └──.env.db
+│  ├──repository/
+│     ├──employees.py
+│     └──equipment.py
+│  ├──models.py
+│  ├──main.py
+│  ├──docker-compose.yaml
+│  ├──README.md
+│  ├──requirements.txt
