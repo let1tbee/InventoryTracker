@@ -1,4 +1,4 @@
-from fastapi import Depends, status, APIRouter
+from fastapi import Depends, status, APIRouter, Query
 from typing import Annotated
 from app import database, models
 from app.repository import employees
@@ -17,8 +17,23 @@ def get_employee(emp_id: int, session: SessionDep):
     return employees.get_employee(emp_id, session)
 
 @router.get("/",)
-def get_employees(session: SessionDep, offset: int = 0, limit: int = 10):
+def get_employees(session: SessionDep, offset: int = 0, limit: Annotated[int, Query(le=100)] = 10):
     return employees.get_employees(session, offset, limit)
+
+@router.get("/search/")
+def search_employeess(
+        session: SessionDep,
+        first_name: str | None = None,
+        last_name: str | None = None,
+        email: str | None = None,
+        offset: int = 0,
+        limit: Annotated[int, Query(le=100)] = 10
+        ):
+    return employees.search_employees(session, first_name, last_name, email, offset, limit)
+
+@router.get("/equipment/{emp_id}")
+def get_assigned_equipment(emp_id: int, session: SessionDep):
+    return employees.get_assigned_equipment(emp_id, session)
 
 @router.delete("/{emp_id}")
 def delete_employee(emp_id: int, session: SessionDep):
