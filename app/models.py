@@ -28,7 +28,6 @@ class Equipment(EquipmentBase, table=True):
     status: ItemStatus = Field(default=ItemStatus.AVAILABLE, index=True)
     assigned_to: int | None = Field(default=None, index=True)
 
-
 class EquipmentUpdate(EquipmentBase):
     name: str | None = None
     s_n: str | None = None
