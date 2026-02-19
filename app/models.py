@@ -22,11 +22,12 @@ class EmployeeUpdate(EmployeesBase):
 class EquipmentBase(SQLModel):
     name: str = Field(index=True)
     s_n: str = Field(unique=True,index=True)
-    status: ItemStatus = Field(default= ItemStatus.AVAILABLE,index=True)
-    assigned_to: int | None = Field(default=None, index=True)
 
 class Equipment(EquipmentBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
+    status: ItemStatus = Field(default=ItemStatus.AVAILABLE, index=True)
+    assigned_to: int | None = Field(default=None, index=True)
+
 
 class EquipmentUpdate(EquipmentBase):
     name: str | None = None

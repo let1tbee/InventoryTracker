@@ -15,7 +15,7 @@ def get_equipment(equip_id: int, session: Session):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Equipment with id {equip_id} not found")
     return equip
 
-def get_equipments(session: Session, offest: int, limit: int):
+def get_equipments(session: Session, offset: int, limit: int):
     equips = session.exec(select(models.Equipment).offset(offset).limit(limit)).all()
     return equips
 
@@ -25,7 +25,6 @@ def delete_equipment(equip_id: int, session: Session):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Equipment with id {equip_id} not found")
     session.delete(equip)
     session.commit()
-    session.refresh(equip)
     return {"ok" : True}
 
 def update_equipment(equip_id: int, equip: models.EquipmentUpdate, session: Session):
