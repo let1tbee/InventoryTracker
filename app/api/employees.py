@@ -8,7 +8,7 @@ SessionDep = Annotated[database.Session, Depends(database.get_session)]
 router = APIRouter(prefix="/employees",
                    tags=["employees"])
 
-@router.post("/", response_model=models.EmployeesBase, status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 def create_employee(employee: models.EmployeesBase, session: SessionDep):
     return employees.create_employee(employee, session)
 

@@ -3,11 +3,11 @@ from sqlmodel import Session, select
 from fastapi import HTTPException, status
 
 def create_employee(employee: models.EmployeesBase, session: Session):
-    db_employee = models.Employees.model_validate(employee)
-    session.add(db_employee)
+    employee_db = models.Employees.model_validate(employee)
+    session.add(employee_db)
     session.commit()
-    session.refresh(db_employee)
-    return db_employee
+    session.refresh(employee_db)
+    return employee_db
 
 def get_employee(emp_id: int, session: Session):
     employee = session.get(models.Employees, emp_id)

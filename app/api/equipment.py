@@ -10,7 +10,7 @@ router = APIRouter(prefix="/equipment",
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def create_equipment(equip: models.Equipment, session: SessionDep):
-    return create_equipment(session, equip)
+    return create_equipment(equip, session)
 
 @router.get("/{equip_id}")
 def get_equipment(equip_id: int, session: SessionDep):
