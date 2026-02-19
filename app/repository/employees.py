@@ -15,7 +15,7 @@ def get_employee(emp_id: int, session: Session):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Employee with id {emp_id} not found")
     return employee
 
-def get_employees(session: Session, limit: int = 10, offset: int = 0):
+def get_employees(session: Session, offset: int, limit: int):
     employees = session.exec(select(models.Employees).offset(offset).limit(limit)).all()
     return employees
 

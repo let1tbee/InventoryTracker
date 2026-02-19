@@ -17,8 +17,8 @@ def get_employee(emp_id: int, session: SessionDep):
     return employees.get_employee(emp_id, session)
 
 @router.get("/",)
-def get_employees(session: SessionDep, limit: int = 10):
-    return employees.get_employees(session, limit)
+def get_employees(session: SessionDep,offset: int = 0, limit: int = 10):
+    return employees.get_employees(session, offset, limit)
 
 @router.delete("/{emp_id}",)
 def delete_employee(emp_id: int, session: SessionDep):
