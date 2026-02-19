@@ -7,3 +7,4 @@ SessionDep = Annotated[database.Session, Depends(database.get_session)]
 
 router = APIRouter(prefix="/equipment",
                    tags=["equipment"])
+
