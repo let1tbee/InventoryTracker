@@ -1,4 +1,4 @@
-from .. import models
+from app import models
 from sqlmodel import Session, select
 from fastapi import HTTPException, status
 

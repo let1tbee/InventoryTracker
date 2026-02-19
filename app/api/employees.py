@@ -12,18 +12,18 @@ router = APIRouter(prefix="/employees",
 def create_employee(employee: models.EmployeesBase, session: SessionDep):
     return employees.create_employee(employee, session)
 
-@router.get("/{emp_id}",response_model=models.EmployeesBase)
+@router.get("/{emp_id}")
 def get_employee(emp_id: int, session: SessionDep):
     return employees.get_employee(emp_id, session)
 
 @router.get("/",)
-def get_employees(session: SessionDep,offset: int = 0, limit: int = 10):
+def get_employees(session: SessionDep, offset: int = 0, limit: int = 10):
     return employees.get_employees(session, offset, limit)
 
-@router.delete("/{emp_id}",)
+@router.delete("/{emp_id}")
 def delete_employee(emp_id: int, session: SessionDep):
     return employees.delete_employee(emp_id, session)
 
-@router.patch("/{emp_id}",response_model=models.EmployeesBase)
+@router.patch("/{emp_id}")
 def update_employee(emp_id: int, employee: models.EmployeeUpdate, session: SessionDep):
     return employees.update_employee(emp_id, employee, session)
