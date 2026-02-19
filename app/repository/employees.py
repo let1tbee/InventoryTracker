@@ -1,13 +1,13 @@
-from .. import models
+from app import models
 from sqlmodel import Session, select
 from fastapi import HTTPException, status
 
 def create_employee(employee: models.EmployeesBase, session: Session):
-    db_employee = models.Employees.model_validate(employee)
-    session.add(db_employee)
+    employee_db = models.Employees.model_validate(employee)
+    session.add(employee_db)
     session.commit()
-    session.refresh(db_employee)
-    return db_employee
+    session.refresh(employee_db)
+    return employee_db
 
 def get_employee(emp_id: int, session: Session):
     employee = session.get(models.Employees, emp_id)
@@ -15,8 +15,8 @@ def get_employee(emp_id: int, session: Session):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Employee with id {emp_id} not found")
     return employee
 
-def get_employees(session: Session, limit: int = 10):
-    employees = session.exec(select(models.Employees).limit(limit)).all()
+def get_employees(session: Session, offset: int, limit: int):
+    employees = session.exec(select(models.Employees).offset(offset).limit(limit)).all()
     return employees
 
 def delete_employee(emp_id: int, session: Session):

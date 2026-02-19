@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api import employees
+from app.api import employees, equipment
 from app.database import lifespan
 
 TITLE = "Inventory Tracker"
@@ -14,6 +14,7 @@ app = FastAPI(title=TITLE,
               lifespan=lifespan)
 
 app.include_router(employees.router)
+app.include_router(equipment.router)
 
 @app.get("/")
 def read_root():

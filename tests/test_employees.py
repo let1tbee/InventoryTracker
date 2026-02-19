@@ -9,16 +9,16 @@ test_employees = [{
         "last_name": "test_last_name",
         "email": "test@test",
         },
-    {
+        {
         "first_name": "test_first_name1",
         "last_name": "test_last_name1",
         "email": "test1@test",
-    },
-    {
+        },
+        {
         "first_name": "test_first_name2",
         "last_name": "test_last_name2",
         "email": "test2@test",
-    }]
+        }]
 
 sqlite_url = f"sqlite:///:memory:"
 connect_args = {"check_same_thread": False}
@@ -43,9 +43,10 @@ def test_get_employees():
     assert response.status_code == 200
     data = response.json()
     assert len(data) == len(test_employees)
-    assert data[0]["first_name"] == test_employees[0]["first_name"]
-    assert data[0]["last_name"] == test_employees[0]["last_name"]
-    assert data[0]["email"] == test_employees[0]["email"]
+    for i in range(len(test_employees)):
+        assert data[i]["first_name"] == test_employees[i]["first_name"]
+        assert data[i]["last_name"] == test_employees[i]["last_name"]
+        assert data[i]["email"] == test_employees[i]["email"]
 
 def test_get_employee():
     response = client.get("/employees/1")
