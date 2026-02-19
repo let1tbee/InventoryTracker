@@ -28,19 +28,19 @@ def get_assigned_equipment(emp_id: int, session: Session):
     return employee.equipment_list
 
 def search_employees(session, first_name, last_name, email, offset, limit):
-    statement = select(models.Equipment)
+    statement = select(models.Employees)
 
     if first_name is not None:
-        statement = statement.where(models.Equipment.first_name == first_name)
+        statement = statement.where(models.Employees.first_name == first_name)
     if last_name is not None:
-        statement = statement.where(models.Equipment.s_n == last_name)
+        statement = statement.where(models.Employees.last_name == last_name)
     if email is not None:
-        statement = statement.where(models.Equipment.status == email)
+        statement = statement.where(models.Employees.email == email)
 
     statement = statement.offset(offset).limit(limit)
     equips = session.exec(statement).all()
     if not equips:
-        return {"result": "No equipments found"}
+        return {"result": "No employee found"}
     return equips
 
 def delete_employee(emp_id: int, session: Session):
