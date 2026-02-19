@@ -36,7 +36,7 @@ class EquipmentUpdate(EquipmentBase):
     name: str | None = None
     s_n: str | None = None
     status: ItemStatus | None = None
-    assigned_to: int | None = None
+
 
 
 
