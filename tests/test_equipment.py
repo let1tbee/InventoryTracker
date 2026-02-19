@@ -29,6 +29,15 @@ def override_get_session():
 client = TestClient(app)
 app.dependency_overrides[get_session] = override_get_session
 
+@pytest.fixture
+def create_test_employee():
+    client.post("/employees/", json={
+        "first_name": "test_first_name",
+        "last_name": "test_last_name",
+        "email": "test@test"
+        })
+
+
 @pytest.mark.parametrize("equipment", test_equipment)
 def test_create_equipment(equipment):
     response = client.post("/equipment/", json=equipment)
@@ -51,6 +60,21 @@ def test_get_equipment():
     assert data["name"] == test_equipment[0]["name"]
     assert data["s_n"] == test_equipment[0]["s_n"]
 
+@pytest.mark.parametrize("equipment", test_equipment)
+def test_search_equipments(equipment):
+    link = "/equipment/search/?name="+equipment["name"]+"&s_n="+equipment["s_n"]
+    response = client.get(link)
+    assert response.status_code == 200
+    data = response.json()
+    assert data[0]["name"] == equipment["name"]
+    assert data[0]["s_n"] == equipment["s_n"]
+
+def test_assign_equipment(create_test_employee):
+    response = client.patch("/equipment/assign/1?assignee_id=1")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["assigned_to"] == 1
+
 def test_update_equipment():
     response = client.patch("/equipment/1", json={"s_n" : "0007"})
     assert response.status_code == 200
@@ -66,3 +90,5 @@ def test_delete_equipment():
     assert response_del.status_code == 200
     data_del = response_del.json()
     assert len(data_del) == len(test_equipment) - 1
+
+

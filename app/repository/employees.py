@@ -24,7 +24,7 @@ def get_assigned_equipment(emp_id: int, session: Session):
     if not employee:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Employee with id {emp_id} not found")
     if not employee.equipment_list:
-        return {"equipment_list": "No assigned equipment"}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No employee found")
     return employee.equipment_list
 
 def search_employees(session, first_name, last_name, email, offset, limit):
