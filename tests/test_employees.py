@@ -1,8 +1,4 @@
 import pytest
-from sqlmodel import create_engine, SQLModel, Session, StaticPool
-from fastapi.testclient import TestClient
-from main import app
-from app.database import get_session
 
 test_employees = [{
         "first_name": "test_first_name",
@@ -20,20 +16,9 @@ test_employees = [{
         "email": "test2@test",
         }]
 
-sqlite_url = f"sqlite:///:memory:"
-connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, connect_args=connect_args, poolclass=StaticPool)
-SQLModel.metadata.create_all(engine)
-
-def override_get_session():
-    with Session(engine) as session:
-        yield session
-
-client = TestClient(app)
-app.dependency_overrides[get_session] = override_get_session
 
 @pytest.fixture
-def create_assigned_equipment():
+def create_assigned_equipment(client):
     client.post("/equipment/", json={
         "name": "laptop",
         "s_n": "0001"
@@ -41,12 +26,12 @@ def create_assigned_equipment():
     client.patch("/equipment/assign/1?assignee_id=1")
 
 @pytest.mark.parametrize("employee", test_employees)
-def test_create_employee(employee):
+def test_create_employee(employee, client):
     response = client.post("/employees/", json=employee)
     assert response.status_code == 201
 
 
-def test_get_employees():
+def test_get_employees(client):
     response = client.get("/employees/")
     assert response.status_code == 200
     data = response.json()
@@ -56,7 +41,7 @@ def test_get_employees():
         assert data[i]["last_name"] == test_employees[i]["last_name"]
         assert data[i]["email"] == test_employees[i]["email"]
 
-def test_get_employee():
+def test_get_employee(client):
     response = client.get("/employees/1")
     assert response.status_code == 200
     data = response.json()
@@ -65,7 +50,7 @@ def test_get_employee():
     assert data["email"] == test_employees[0]["email"]
 
 @pytest.mark.parametrize("employee", test_employees)
-def test_search_equipments(employee):
+def test_search_equipments(employee,client):
     link = "/employees/search/?first_name="+employee["first_name"]+"&last_name="+employee["last_name"]+"&email="+employee["email"]
     response = client.get(link)
     assert response.status_code == 200
@@ -74,20 +59,20 @@ def test_search_equipments(employee):
     assert data[0]["last_name"] == employee["last_name"]
     assert data[0]["email"] == employee["email"]
 
-def test_get_assigned_equipment(create_assigned_equipment):
+def test_get_assigned_equipment(create_assigned_equipment,client):
     response = client.get("/employees/equipment/1")
     assert response.status_code == 200
     data = response.json()
     print(data)
     assert data
 
-def test_update_employee():
+def test_update_employee(client):
     response = client.patch("/employees/1", json={"first_name" : "changed_first_name"})
     assert response.status_code == 200
     data = response.json()
     assert data["first_name"] == "changed_first_name"
 
-def test_delete_employee():
+def test_delete_employee(client):
     response = client.delete("/employees/1")
     assert response.status_code == 200
     data = response.json()

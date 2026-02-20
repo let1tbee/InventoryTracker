@@ -1,8 +1,4 @@
-from fastapi.testclient import TestClient
-from sqlmodel import create_engine, SQLModel, Session, StaticPool
 import pytest
-from main import app
-from app.database import get_session
 
 test_equipment = [{
         "name": "laptop",
@@ -17,33 +13,21 @@ test_equipment = [{
         "s_n": "0003"
         }]
 
-sqlite_url = f"sqlite:///:memory:"
-connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, connect_args=connect_args, poolclass=StaticPool)
-SQLModel.metadata.create_all(engine)
-
-def override_get_session():
-    with Session(engine) as session:
-        yield session
-
-client = TestClient(app)
-app.dependency_overrides[get_session] = override_get_session
 
 @pytest.fixture
-def create_test_employee():
+def create_test_employee(client):
     client.post("/employees/", json={
         "first_name": "test_first_name",
         "last_name": "test_last_name",
         "email": "test@test"
         })
 
-
 @pytest.mark.parametrize("equipment", test_equipment)
-def test_create_equipment(equipment):
+def test_create_equipment(equipment, client):
     response = client.post("/equipment/", json=equipment)
     assert response.status_code == 201
 
-def test_get_equipments():
+def test_get_equipments(client):
     response = client.get("/equipment/")
     assert response.status_code == 200
     data = response.json()
@@ -53,7 +37,7 @@ def test_get_equipments():
         assert data[i]["s_n"] == test_equipment[i]["s_n"]
         assert data[i]["status"] == "available"
 
-def test_get_equipment():
+def test_get_equipment(client):
     response = client.get("/equipment/1")
     assert response.status_code == 200
     data = response.json()
@@ -61,7 +45,7 @@ def test_get_equipment():
     assert data["s_n"] == test_equipment[0]["s_n"]
 
 @pytest.mark.parametrize("equipment", test_equipment)
-def test_search_equipments(equipment):
+def test_search_equipments(equipment, client):
     link = "/equipment/search/?name="+equipment["name"]+"&s_n="+equipment["s_n"]
     response = client.get(link)
     assert response.status_code == 200
@@ -69,19 +53,19 @@ def test_search_equipments(equipment):
     assert data[0]["name"] == equipment["name"]
     assert data[0]["s_n"] == equipment["s_n"]
 
-def test_assign_equipment(create_test_employee):
+def test_assign_equipment(create_test_employee, client):
     response = client.patch("/equipment/assign/1?assignee_id=1")
     assert response.status_code == 200
     data = response.json()
     assert data["assigned_to"] == 1
 
-def test_update_equipment():
+def test_update_equipment(client):
     response = client.patch("/equipment/1", json={"s_n" : "0007"})
     assert response.status_code == 200
     data = response.json()
     assert data["s_n"] == "0007"
 
-def test_delete_equipment():
+def test_delete_equipment(client):
     response = client.delete("/equipment/1")
     assert response.status_code == 200
     data = response.json()
