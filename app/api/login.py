@@ -5,7 +5,7 @@ from app import database, models
 from app.repository import login
 
 SessionDep = Annotated[database.Session, Depends(database.get_session)]
-router = APIRouter()
+router = APIRouter(tags=["users"])
 
 @router.post("/token")
 def login_for_access_token(
