@@ -72,12 +72,8 @@ class TestEmployees:
     @pytest.mark.parametrize("employee", test_employees)
     def test_search_equipments(self, employee, client):
         link = (
-            "/employees/search/?first_name="
-            + employee["first_name"]
-            + "&last_name="
-            + employee["last_name"]
-            + "&email="
-            + employee["email"]
+            f"/employees/search/?first_name={employee['first_name']}&last_name="
+            f"{employee['last_name']}&email={employee['email']}"
         )
         response = client.get(link)
         assert response.status_code == 200

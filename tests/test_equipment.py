@@ -58,9 +58,7 @@ class TestEquipment:
 
     @pytest.mark.parametrize("equipment", test_equipment)
     def test_search_equipments(self, equipment, client):
-        link = (
-            "/equipment/search/?name=" + equipment["name"] + "&s_n=" + equipment["s_n"]
-        )
+        link = f"/equipment/search/?name={equipment['name']}&s_n={equipment['s_n']}"
         response = client.get(link)
         assert response.status_code == 200
         data = response.json()
