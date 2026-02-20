@@ -34,8 +34,7 @@ def search_equipments(session, name, s_n, equip_status, offset, limit):
 
     statement = statement.offset(offset).limit(limit)
     equips = session.exec(statement).all()
-    if not equips:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No equipments found")
+
     return equips
 
 def delete_equipment(equip_id: int, session: Session):

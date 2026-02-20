@@ -31,8 +31,7 @@ def search_employees(session, first_name, last_name, email, offset, limit):
 
     statement = statement.offset(offset).limit(limit)
     equips = session.exec(statement).all()
-    if not equips:
-        return {"result": "No employee found"}
+
     return equips
 
 def get_assigned_equipment(emp_id: int, session: Session):

@@ -82,7 +82,6 @@ class TestEmployees:
         response = client.get("/employees/equipment/1")
         assert response.status_code == 200
         data = response.json()
-        print(data)
         assert data
 
     def test_update_employee(self, authorized_client):
