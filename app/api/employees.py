@@ -21,7 +21,7 @@ def get_employees(session: SessionDep, offset: int = 0, limit: Annotated[int, Qu
     return employees.get_employees(session, offset, limit)
 
 @router.get("/search/")
-def search_employeess(
+def search_employees(
         session: SessionDep,
         first_name: str | None = None,
         last_name: str | None = None,

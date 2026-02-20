@@ -1,6 +1,5 @@
 import pytest
 from app import models
-from app.models import ItemStatus
 
 test_employees = [{
         "first_name": "test_first_name",
@@ -18,6 +17,12 @@ test_employees = [{
         "email": "test2@test",
         }]
 
+single_test_employee = {
+            "first_name": "test_first_name3",
+            "last_name": "test_last_name3",
+            "email": "test3@test",
+            }
+
 test_equipment = [{
         "name": "laptop",
         "s_n": "0001"
@@ -34,7 +39,7 @@ def fill_test_tables(setup_session):
         empl_db = setup_session.get(models.Employees, 1)
         setup_session.add(equip_db)
         equip_db.assignee = empl_db
-        equip_db.status = ItemStatus.ASSIGNED
+        equip_db.status = models.ItemStatus.ASSIGNED
 
     setup_session.commit()
 
@@ -42,12 +47,16 @@ def fill_test_tables(setup_session):
 class TestEmployees:
 
     def test_create_employee(self, client):
-        response = client.post("/employees/", json={
-            "first_name": "test_first_name3",
-            "last_name": "test_last_name3",
-            "email": "test3@test",
-            })
+        response = client.post("/employees/", json=single_test_employee)
         assert response.status_code == 201
+
+    def test_get_employee(self, client):
+        response = client.get("/employees/1")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["first_name"] == test_employees[0]["first_name"]
+        assert data["last_name"] == test_employees[0]["last_name"]
+        assert data["email"] == test_employees[0]["email"]
 
     def test_get_employees(self, client):
         response = client.get("/employees/")
@@ -58,14 +67,6 @@ class TestEmployees:
             assert data[i]["first_name"] == test_employees[i]["first_name"]
             assert data[i]["last_name"] == test_employees[i]["last_name"]
             assert data[i]["email"] == test_employees[i]["email"]
-
-    def test_get_employee(self, client):
-        response = client.get("/employees/1")
-        assert response.status_code == 200
-        data = response.json()
-        assert data["first_name"] == test_employees[0]["first_name"]
-        assert data["last_name"] == test_employees[0]["last_name"]
-        assert data["email"] == test_employees[0]["email"]
 
     @pytest.mark.parametrize("employee", test_employees)
     def test_search_equipments(self, employee, client):
