@@ -1,6 +1,6 @@
 from fastapi import Depends, status, APIRouter, Query
 from typing import Annotated
-from app import database, models, hashing
+from app import database, models, oauth2
 from app.models import ItemStatus
 from app.repository import equipment
 
@@ -10,7 +10,7 @@ router = APIRouter(prefix="/equipment",
                    tags=["equipment"])
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def create_equipment(equip: models.EquipmentBase, session: SessionDep, current_user: Annotated[models.Users, Depends(hashing.get_current_user)]):
+def create_equipment(equip: models.EquipmentBase, session: SessionDep, current_user: Annotated[models.Users, Depends(oauth2.get_current_user)]):
     return equipment.create_equipment(equip, session)
 
 @router.get("/{equip_id}")
@@ -33,13 +33,13 @@ def search_equipments(
     return equipment.search_equipments(session, name, s_n, equip_status, offset, limit)
 
 @router.delete("/{equip_id}")
-def delete_equipment(equip_id: int, session: SessionDep, current_user: Annotated[models.Users, Depends(hashing.get_current_user)]):
+def delete_equipment(equip_id: int, session: SessionDep, current_user: Annotated[models.Users, Depends(oauth2.get_current_user)]):
     return equipment.delete_equipment(equip_id, session)
 
 @router.patch("/{equip_id}")
-def update_equipment(equip_id: int, equip: models.EquipmentUpdate, session: SessionDep, current_user: Annotated[models.Users, Depends(hashing.get_current_user)]):
+def update_equipment(equip_id: int, equip: models.EquipmentUpdate, session: SessionDep, current_user: Annotated[models.Users, Depends(oauth2.get_current_user)]):
     return equipment.update_equipment(equip_id, equip, session)
 
 @router.patch("/assign/{equip_id}")
-def assign_equipment(equip_id: int, assignee_id: int, session: SessionDep, current_user: Annotated[models.Users, Depends(hashing.get_current_user)]):
+def assign_equipment(equip_id: int, assignee_id: int, session: SessionDep, current_user: Annotated[models.Users, Depends(oauth2.get_current_user)]):
     return equipment.assign_equipment(equip_id, assignee_id, session)

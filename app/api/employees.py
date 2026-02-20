@@ -1,6 +1,6 @@
 from fastapi import Depends, status, APIRouter, Query
 from typing import Annotated
-from app import database, models, hashing
+from app import database, models, oauth2
 from app.repository import employees
 
 SessionDep = Annotated[database.Session, Depends(database.get_session)]
@@ -9,7 +9,7 @@ router = APIRouter(prefix="/employees",
                    tags=["employees"])
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def create_employee(employee: models.EmployeesBase, session: SessionDep, current_user: Annotated[models.Users, Depends(hashing.get_current_user)]):
+def create_employee(employee: models.EmployeesBase, session: SessionDep, current_user: Annotated[models.Users, Depends(oauth2.get_current_user)]):
     return employees.create_employee(employee, session)
 
 @router.get("/{emp_id}")
@@ -36,9 +36,9 @@ def get_assigned_equipment(emp_id: int, session: SessionDep):
     return employees.get_assigned_equipment(emp_id, session)
 
 @router.delete("/{emp_id}")
-def delete_employee(emp_id: int, session: SessionDep, current_user: Annotated[models.Users, Depends(hashing.get_current_user)]):
+def delete_employee(emp_id: int, session: SessionDep, current_user: Annotated[models.Users, Depends(oauth2.get_current_user)]):
     return employees.delete_employee(emp_id, session)
 
 @router.patch("/{emp_id}")
-def update_employee(emp_id: int, employee: models.EmployeeUpdate, session: SessionDep, current_user: Annotated[models.Users, Depends(hashing.get_current_user)]):
+def update_employee(emp_id: int, employee: models.EmployeeUpdate, session: SessionDep, current_user: Annotated[models.Users, Depends(oauth2.get_current_user)]):
     return employees.update_employee(emp_id, employee, session)

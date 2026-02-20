@@ -44,7 +44,6 @@ class UsersBase(SQLModel):
 class Users(UsersBase, table=True):
     id: int = Field(default=None, primary_key=True)
 
-
 class Token(SQLModel):
     access_token: str
     token_type: str
