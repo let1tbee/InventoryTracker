@@ -37,6 +37,19 @@ class EquipmentUpdate(EquipmentBase):
     s_n: str | None = None
     status: ItemStatus | None = None
 
+class UsersBase(SQLModel):
+    username: str = Field(index=True)
+    password: str = Field(index=True)
+
+class Users(UsersBase, table=True):
+    id: int = Field(default=None, primary_key=True)
+
+
+class Token(SQLModel):
+    access_token: str
+    token_type: str
+    username: str | None = None
+
 
 
 
