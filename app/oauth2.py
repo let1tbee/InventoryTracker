@@ -2,15 +2,15 @@ from datetime import datetime, timedelta, timezone
 from pwdlib import PasswordHash
 from sqlmodel import select, Session
 from typing import Annotated
-from app import models
+from app import models, config
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from app import database
 import jwt
 
-SECRET_KEY = "a6ca255694fac63b88e89gr8m0j4caa6cfd3e818166b7a9563b93f7009d25e07"
-ALGORITHM = "HS256"
+SECRET_KEY = config.settings.SECRET_KEY
+ALGORITHM = config.settings.ALGORITHM
 
 password_hash = PasswordHash.recommended()
 
