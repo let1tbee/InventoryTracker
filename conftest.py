@@ -1,6 +1,8 @@
 from fastapi.testclient import TestClient
 from sqlmodel import create_engine, SQLModel, Session, StaticPool
 from app.database import get_session
+from app.models import Users
+from app.oauth2 import get_password_hash
 from main import app
 import pytest
 
@@ -33,3 +35,27 @@ def client(setup_session):
     yield client
 
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def authorized_client(client, setup_session):
+    test_user = Users(
+        username="test_admin",
+        password=get_password_hash("secret_pass")
+    )
+    setup_session.add(test_user)
+    setup_session.commit()
+
+    login_data = {
+        "username": "test_admin",
+        "password": "secret_pass"
+    }
+    response = client.post("/token", data=login_data)
+
+    token = response.json()["access_token"]
+
+    client.headers = {
+        **client.headers,
+        "Authorization": f"Bearer {token}"
+    }
+    return client

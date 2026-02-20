@@ -46,8 +46,8 @@ def fill_test_tables(setup_session):
 @pytest.mark.usefixtures("fill_test_tables")
 class TestEmployees:
 
-    def test_create_employee(self, client):
-        response = client.post("/employees/", json=single_test_employee)
+    def test_create_employee(self, authorized_client):
+        response = authorized_client.post("/employees/", json=single_test_employee)
         assert response.status_code == 201
 
     def test_get_employee(self, client):
@@ -85,18 +85,18 @@ class TestEmployees:
         print(data)
         assert data
 
-    def test_update_employee(self, client):
-        response = client.patch("/employees/1", json={"first_name" : "changed_first_name"})
+    def test_update_employee(self, authorized_client):
+        response = authorized_client.patch("/employees/1", json={"first_name" : "changed_first_name"})
         assert response.status_code == 200
         data = response.json()
         assert data["first_name"] == "changed_first_name"
 
-    def test_delete_employee(self, client):
-        response = client.delete("/employees/1")
+    def test_delete_employee(self, authorized_client):
+        response = authorized_client.delete("/employees/1")
         assert response.status_code == 200
         data = response.json()
         assert data == {'ok': True}
-        response_del = client.get("/employees/")
+        response_del = authorized_client.get("/employees/")
         assert response_del.status_code == 200
         data_del = response_del.json()
         assert len(data_del) == len(test_employees) - 1
