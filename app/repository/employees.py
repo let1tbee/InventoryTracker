@@ -37,9 +37,9 @@ def search_employees(session, first_name, last_name, email, offset, limit):
         statement = statement.where(models.Employees.email == email)
 
     statement = statement.offset(offset).limit(limit)
-    equips = session.exec(statement).all()
+    empls = session.exec(statement).all()
 
-    return equips
+    return empls
 
 
 def get_assigned_equipment(emp_id: int, session: Session):

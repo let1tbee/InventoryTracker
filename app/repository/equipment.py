@@ -58,7 +58,7 @@ def delete_equipment(equip_id: int, session: Session):
 
 def update_equipment(equip_id: int, equip: models.EquipmentUpdate, session: Session):
     equip_db = session.get(models.Equipment, equip_id)
-    if not equip:
+    if not equip_db:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Equipment with id {equip_id} not found",
