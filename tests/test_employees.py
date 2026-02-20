@@ -1,8 +1,5 @@
 import pytest
-from sqlmodel import create_engine, SQLModel, Session, StaticPool
-from fastapi.testclient import TestClient
-from main import app
-from app.database import get_session
+from app import models
 
 test_employees = [{
         "first_name": "test_first_name",
@@ -20,57 +17,92 @@ test_employees = [{
         "email": "test2@test",
         }]
 
-sqlite_url = f"sqlite:///:memory:"
-connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, connect_args=connect_args, poolclass=StaticPool)
-SQLModel.metadata.create_all(engine)
+single_test_employee = {
+            "first_name": "test_first_name3",
+            "last_name": "test_last_name3",
+            "email": "test3@test",
+            }
 
-def override_get_session():
-    with Session(engine) as session:
-        yield session
+test_equipment = [{
+        "name": "laptop",
+        "s_n": "0001"
+        }]
 
-client = TestClient(app)
-app.dependency_overrides[get_session] = override_get_session
+@pytest.fixture()
+def fill_test_tables(setup_session):
+    for i in test_employees:
+        empl_db = models.Employees.model_validate(i)
+        setup_session.add(empl_db)
 
-@pytest.mark.parametrize("employee", test_employees)
-def test_create_employee(employee):
-    response = client.post("/employees/", json=employee)
-    assert response.status_code == 201
+    for i in test_equipment:
+        equip_db = models.Equipment.model_validate(i)
+        empl_db = setup_session.get(models.Employees, 1)
+        setup_session.add(equip_db)
+        equip_db.assignee = empl_db
+        equip_db.status = models.ItemStatus.ASSIGNED
+
+    setup_session.commit()
+
+@pytest.mark.usefixtures("fill_test_tables")
+class TestEmployees:
+
+    def test_create_employee(self, authorized_client):
+        response = authorized_client.post("/employees/", json=single_test_employee)
+        assert response.status_code == 201
+
+    def test_get_employee(self, client):
+        response = client.get("/employees/1")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["first_name"] == test_employees[0]["first_name"]
+        assert data["last_name"] == test_employees[0]["last_name"]
+        assert data["email"] == test_employees[0]["email"]
+
+    def test_get_employees(self, client):
+        response = client.get("/employees/")
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == len(test_employees)
+        for i in range(len(test_employees)):
+            assert data[i]["first_name"] == test_employees[i]["first_name"]
+            assert data[i]["last_name"] == test_employees[i]["last_name"]
+            assert data[i]["email"] == test_employees[i]["email"]
+
+    @pytest.mark.parametrize("employee", test_employees)
+    def test_search_equipments(self, employee, client):
+        link = "/employees/search/?first_name="+employee["first_name"]+"&last_name="+employee["last_name"]+"&email="+employee["email"]
+        response = client.get(link)
+        assert response.status_code == 200
+        data = response.json()
+        assert data[0]["first_name"] == employee["first_name"]
+        assert data[0]["last_name"] == employee["last_name"]
+        assert data[0]["email"] == employee["email"]
+
+    def test_get_assigned_equipment(self, client):
+        response = client.get("/employees/equipment/1")
+        assert response.status_code == 200
+        data = response.json()
+        print(data)
+        assert data
+
+    def test_update_employee(self, authorized_client):
+        response = authorized_client.patch("/employees/1", json={"first_name" : "changed_first_name"})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["first_name"] == "changed_first_name"
+
+    def test_delete_employee(self, authorized_client):
+        response = authorized_client.delete("/employees/1")
+        assert response.status_code == 200
+        data = response.json()
+        assert data == {'ok': True}
+        response_del = authorized_client.get("/employees/")
+        assert response_del.status_code == 200
+        data_del = response_del.json()
+        assert len(data_del) == len(test_employees) - 1
 
 
-def test_get_employees():
-    response = client.get("/employees/")
-    assert response.status_code == 200
-    data = response.json()
-    assert len(data) == len(test_employees)
-    for i in range(len(test_employees)):
-        assert data[i]["first_name"] == test_employees[i]["first_name"]
-        assert data[i]["last_name"] == test_employees[i]["last_name"]
-        assert data[i]["email"] == test_employees[i]["email"]
 
-def test_get_employee():
-    response = client.get("/employees/1")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["first_name"] == test_employees[0]["first_name"]
-    assert data["last_name"] == test_employees[0]["last_name"]
-    assert data["email"] == test_employees[0]["email"]
-
-def test_update_employee():
-    response = client.patch("/employees/1", json={"first_name" : "changed_first_name"})
-    assert response.status_code == 200
-    data = response.json()
-    assert data["first_name"] == "changed_first_name"
-
-def test_delete_employee():
-    response = client.delete("/employees/1")
-    assert response.status_code == 200
-    data = response.json()
-    assert data == {'ok': True}
-    response_del = client.get("/employees/")
-    assert response_del.status_code == 200
-    data_del = response_del.json()
-    assert len(data_del) == len(test_employees) - 1
 
 
 

@@ -19,6 +19,31 @@ def get_employees(session: Session, offset: int, limit: int):
     employees = session.exec(select(models.Employees).offset(offset).limit(limit)).all()
     return employees
 
+def search_employees(session, first_name, last_name, email, offset, limit):
+    statement = select(models.Employees)
+
+    if first_name is not None:
+        statement = statement.where(models.Employees.first_name == first_name)
+    if last_name is not None:
+        statement = statement.where(models.Employees.last_name == last_name)
+    if email is not None:
+        statement = statement.where(models.Employees.email == email)
+
+    statement = statement.offset(offset).limit(limit)
+    equips = session.exec(statement).all()
+    if not equips:
+        return {"result": "No employee found"}
+    return equips
+
+def get_assigned_equipment(emp_id: int, session: Session):
+    employee = session.get(models.Employees, emp_id)
+    if not employee:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Employee with id {emp_id} not found")
+    if not employee.equipment_list:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No assigned items found")
+    return employee.equipment_list
+
+
 def delete_employee(emp_id: int, session: Session):
     employee = session.get(models.Employees, emp_id)
     if not employee:

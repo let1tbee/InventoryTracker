@@ -4,6 +4,7 @@
 
 **Prerequirements:**
 * Installed Docker
+* .env file as in .env.example
 
 **Setup:**
 * pip install -r requirements.txt

@@ -6,3 +6,6 @@ pydantic_settings
 psycopg2
 pytest
 httpx
+pwdlib[argon2]
+pyjwt
+python-multipart
