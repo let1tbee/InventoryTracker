@@ -1,29 +1,22 @@
 import pytest
 from app import models
 
-test_equipment = [{
-        "name": "laptop",
-        "s_n": "0001"
-        },
-        {
-        "name": "laptop",
-        "s_n": "0002"
-        },
-        {
-        "name": "laptop",
-        "s_n": "0003"
-        }]
+test_equipment = [
+    {"name": "laptop", "s_n": "0001"},
+    {"name": "laptop", "s_n": "0002"},
+    {"name": "laptop", "s_n": "0003"},
+]
 
-single_test_equipment = {
-        "name": "laptop",
-        "s_n": "0004"
-        }
+single_test_equipment = {"name": "laptop", "s_n": "0004"}
 
-test_employees = [{
+test_employees = [
+    {
         "first_name": "test_first_name",
         "last_name": "test_last_name",
-        "email": "test@test"
-        }]
+        "email": "test@test",
+    }
+]
+
 
 @pytest.fixture()
 def fill_test_tables(setup_session):
@@ -39,6 +32,7 @@ def fill_test_tables(setup_session):
         equip_db.status = models.ItemStatus.ASSIGNED
 
     setup_session.commit()
+
 
 @pytest.mark.usefixtures("fill_test_tables")
 class TestEquipment:
@@ -64,7 +58,9 @@ class TestEquipment:
 
     @pytest.mark.parametrize("equipment", test_equipment)
     def test_search_equipments(self, equipment, client):
-        link = "/equipment/search/?name="+equipment["name"]+"&s_n="+equipment["s_n"]
+        link = (
+            "/equipment/search/?name=" + equipment["name"] + "&s_n=" + equipment["s_n"]
+        )
         response = client.get(link)
         assert response.status_code == 200
         data = response.json()
@@ -72,7 +68,7 @@ class TestEquipment:
         assert data[0]["s_n"] == equipment["s_n"]
 
     def test_update_equipment(self, authorized_client):
-        response = authorized_client.patch("/equipment/1", json={"s_n" : "0007"})
+        response = authorized_client.patch("/equipment/1", json={"s_n": "0007"})
         assert response.status_code == 200
         data = response.json()
         assert data["s_n"] == "0007"
@@ -81,7 +77,7 @@ class TestEquipment:
         response = authorized_client.delete("/equipment/1")
         assert response.status_code == 200
         data = response.json()
-        assert data == {"ok" : True}
+        assert data == {"ok": True}
         response_del = authorized_client.get("/equipment/")
         assert response_del.status_code == 200
         data_del = response_del.json()
@@ -92,5 +88,3 @@ class TestEquipment:
         assert response.status_code == 200
         data = response.json()
         assert data["assigned_to"] == 1
-
-

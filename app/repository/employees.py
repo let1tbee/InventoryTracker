@@ -2,6 +2,7 @@ from app import models
 from sqlmodel import Session, select
 from fastapi import HTTPException, status
 
+
 def create_employee(employee: models.EmployeesBase, session: Session):
     employee_db = models.Employees.model_validate(employee)
     session.add(employee_db)
@@ -9,15 +10,21 @@ def create_employee(employee: models.EmployeesBase, session: Session):
     session.refresh(employee_db)
     return employee_db
 
+
 def get_employee(emp_id: int, session: Session):
     employee = session.get(models.Employees, emp_id)
     if not employee:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Employee with id {emp_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Employee with id {emp_id} not found",
+        )
     return employee
+
 
 def get_employees(session: Session, offset: int, limit: int):
     employees = session.exec(select(models.Employees).offset(offset).limit(limit)).all()
     return employees
+
 
 def search_employees(session, first_name, last_name, email, offset, limit):
     statement = select(models.Employees)
@@ -34,27 +41,40 @@ def search_employees(session, first_name, last_name, email, offset, limit):
 
     return equips
 
+
 def get_assigned_equipment(emp_id: int, session: Session):
     employee = session.get(models.Employees, emp_id)
     if not employee:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Employee with id {emp_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Employee with id {emp_id} not found",
+        )
     if not employee.equipment_list:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No assigned items found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="No assigned items found"
+        )
     return employee.equipment_list
 
 
 def delete_employee(emp_id: int, session: Session):
     employee = session.get(models.Employees, emp_id)
     if not employee:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Employee with id {emp_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Employee with id {emp_id} not found",
+        )
     session.delete(employee)
     session.commit()
-    return {"ok" : True}
+    return {"ok": True}
+
 
 def update_employee(emp_id: int, employee: models.EmployeeUpdate, session: Session):
     employee_db = session.get(models.Employees, emp_id)
     if not employee_db:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Employee with id {emp_id} not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Employee with id {emp_id} not found",
+        )
     employee_data = employee.model_dump(exclude_unset=True)
     employee_db.sqlmodel_update(employee_data)
     session.add(employee_db)

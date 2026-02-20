@@ -4,7 +4,8 @@
 
 **Prerequirements:**
 * Installed Docker
-* .env file as in .env.example
+* save .env file as .env
+* create .env.db file
 
 **Setup:**
 * pip install -r requirements.txt

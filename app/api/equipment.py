@@ -6,40 +6,66 @@ from app.repository import equipment
 
 SessionDep = Annotated[database.Session, Depends(database.get_session)]
 
-router = APIRouter(prefix="/equipment",
-                   tags=["equipment"])
+router = APIRouter(prefix="/equipment", tags=["equipment"])
+
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-def create_equipment(equip: models.EquipmentBase, session: SessionDep, current_user: Annotated[models.Users, Depends(oauth2.get_current_user)]):
+def create_equipment(
+    equip: models.EquipmentBase,
+    session: SessionDep,
+    current_user: Annotated[models.Users, Depends(oauth2.get_current_user)],
+):
     return equipment.create_equipment(equip, session)
+
 
 @router.get("/{equip_id}")
 def get_equipment(equip_id: int, session: SessionDep):
     return equipment.get_equipment(equip_id, session)
 
+
 @router.get("/")
-def get_equipments(session: SessionDep, offset: int = 0, limit: Annotated[int, Query(le=100)] = 10):
+def get_equipments(
+    session: SessionDep, offset: int = 0, limit: Annotated[int, Query(le=100)] = 10
+):
     return equipment.get_equipments(session, offset, limit)
+
 
 @router.get("/search/")
 def search_equipments(
-        session: SessionDep,
-        name: str | None = None,
-        s_n: str | None = None,
-        equip_status: ItemStatus | None = None,
-        offset: int = 0,
-        limit: Annotated[int, Query(le=100)] = 10
-        ):
+    session: SessionDep,
+    name: str | None = None,
+    s_n: str | None = None,
+    equip_status: ItemStatus | None = None,
+    offset: int = 0,
+    limit: Annotated[int, Query(le=100)] = 10,
+):
     return equipment.search_equipments(session, name, s_n, equip_status, offset, limit)
 
+
 @router.delete("/{equip_id}")
-def delete_equipment(equip_id: int, session: SessionDep, current_user: Annotated[models.Users, Depends(oauth2.get_current_user)]):
+def delete_equipment(
+    equip_id: int,
+    session: SessionDep,
+    current_user: Annotated[models.Users, Depends(oauth2.get_current_user)],
+):
     return equipment.delete_equipment(equip_id, session)
 
+
 @router.patch("/{equip_id}")
-def update_equipment(equip_id: int, equip: models.EquipmentUpdate, session: SessionDep, current_user: Annotated[models.Users, Depends(oauth2.get_current_user)]):
+def update_equipment(
+    equip_id: int,
+    equip: models.EquipmentUpdate,
+    session: SessionDep,
+    current_user: Annotated[models.Users, Depends(oauth2.get_current_user)],
+):
     return equipment.update_equipment(equip_id, equip, session)
 
+
 @router.patch("/assign/{equip_id}")
-def assign_equipment(equip_id: int, assignee_id: int, session: SessionDep, current_user: Annotated[models.Users, Depends(oauth2.get_current_user)]):
+def assign_equipment(
+    equip_id: int,
+    assignee_id: int,
+    session: SessionDep,
+    current_user: Annotated[models.Users, Depends(oauth2.get_current_user)],
+):
     return equipment.assign_equipment(equip_id, assignee_id, session)

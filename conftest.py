@@ -6,6 +6,7 @@ from app.oauth2 import get_password_hash
 from main import app
 import pytest
 
+
 @pytest.fixture()
 def engine():
     sqlite_url = f"sqlite:///:memory:"
@@ -13,16 +14,19 @@ def engine():
     engine = create_engine(sqlite_url, connect_args=connect_args, poolclass=StaticPool)
     return engine
 
+
 @pytest.fixture()
 def setup_tables(engine):
     SQLModel.metadata.create_all(engine)
     yield
     SQLModel.metadata.drop_all(engine)
 
+
 @pytest.fixture()
 def setup_session(engine, setup_tables):
     with Session(engine) as session:
         yield session
+
 
 @pytest.fixture()
 def client(setup_session):
@@ -39,23 +43,14 @@ def client(setup_session):
 
 @pytest.fixture
 def authorized_client(client, setup_session):
-    test_user = Users(
-        username="test_admin",
-        password=get_password_hash("secret_pass")
-    )
+    test_user = Users(username="test_admin", password=get_password_hash("secret_pass"))
     setup_session.add(test_user)
     setup_session.commit()
 
-    login_data = {
-        "username": "test_admin",
-        "password": "secret_pass"
-    }
+    login_data = {"username": "test_admin", "password": "secret_pass"}
     response = client.post("/token", data=login_data)
 
     token = response.json()["access_token"]
 
-    client.headers = {
-        **client.headers,
-        "Authorization": f"Bearer {token}"
-    }
+    client.headers = {**client.headers, "Authorization": f"Bearer {token}"}
     return client

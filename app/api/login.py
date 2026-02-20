@@ -7,10 +7,10 @@ from app.repository import login
 SessionDep = Annotated[database.Session, Depends(database.get_session)]
 router = APIRouter(tags=["users"])
 
+
 @router.post("/token")
 def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-    session: SessionDep
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()], session: SessionDep
 ) -> models.Token:
 
     return login.login_for_access_token(form_data, session)

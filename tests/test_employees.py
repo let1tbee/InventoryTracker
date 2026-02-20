@@ -1,32 +1,32 @@
 import pytest
 from app import models
 
-test_employees = [{
+test_employees = [
+    {
         "first_name": "test_first_name",
         "last_name": "test_last_name",
         "email": "test@test",
-        },
-        {
+    },
+    {
         "first_name": "test_first_name1",
         "last_name": "test_last_name1",
         "email": "test1@test",
-        },
-        {
+    },
+    {
         "first_name": "test_first_name2",
         "last_name": "test_last_name2",
         "email": "test2@test",
-        }]
+    },
+]
 
 single_test_employee = {
-            "first_name": "test_first_name3",
-            "last_name": "test_last_name3",
-            "email": "test3@test",
-            }
+    "first_name": "test_first_name3",
+    "last_name": "test_last_name3",
+    "email": "test3@test",
+}
 
-test_equipment = [{
-        "name": "laptop",
-        "s_n": "0001"
-        }]
+test_equipment = [{"name": "laptop", "s_n": "0001"}]
+
 
 @pytest.fixture()
 def fill_test_tables(setup_session):
@@ -42,6 +42,7 @@ def fill_test_tables(setup_session):
         equip_db.status = models.ItemStatus.ASSIGNED
 
     setup_session.commit()
+
 
 @pytest.mark.usefixtures("fill_test_tables")
 class TestEmployees:
@@ -70,7 +71,14 @@ class TestEmployees:
 
     @pytest.mark.parametrize("employee", test_employees)
     def test_search_equipments(self, employee, client):
-        link = "/employees/search/?first_name="+employee["first_name"]+"&last_name="+employee["last_name"]+"&email="+employee["email"]
+        link = (
+            "/employees/search/?first_name="
+            + employee["first_name"]
+            + "&last_name="
+            + employee["last_name"]
+            + "&email="
+            + employee["email"]
+        )
         response = client.get(link)
         assert response.status_code == 200
         data = response.json()
@@ -85,7 +93,9 @@ class TestEmployees:
         assert data
 
     def test_update_employee(self, authorized_client):
-        response = authorized_client.patch("/employees/1", json={"first_name" : "changed_first_name"})
+        response = authorized_client.patch(
+            "/employees/1", json={"first_name": "changed_first_name"}
+        )
         assert response.status_code == 200
         data = response.json()
         assert data["first_name"] == "changed_first_name"
@@ -94,17 +104,8 @@ class TestEmployees:
         response = authorized_client.delete("/employees/1")
         assert response.status_code == 200
         data = response.json()
-        assert data == {'ok': True}
+        assert data == {"ok": True}
         response_del = authorized_client.get("/employees/")
         assert response_del.status_code == 200
         data_del = response_del.json()
         assert len(data_del) == len(test_employees) - 1
-
-
-
-
-
-
-
-
-
