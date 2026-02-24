@@ -12,4 +12,4 @@ __pycache__/
 
 postgres_data
 
-test.py
+sandbox.py
